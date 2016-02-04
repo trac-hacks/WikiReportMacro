@@ -4,8 +4,8 @@
 
 name = "WikiReport"
 author = "Andrey Rodionov"
-revision = "0.1.0"
-url = ""
+revision = "0.2.0"
+url = "https://github.com/trac-hacks/WikiReportMacro"
 license = "GPL"
 
 from trac.util.translation import _, cleandoc_
@@ -27,11 +27,14 @@ class WikiReport(WikiMacroBase):
     _description = cleandoc_(
     """Wiki macro inserts the Trac report into the wiki page.
     
+        [[WikiReport(<id>,<key1>=<value1>, <keyN>=<valueN>, ...)]]
+    
     This macro accepts a comma-separated list of keyed parameters,
     in the form "key=value" and "id".
+       - "id" -- then report id of the Trac
        - "key" -- then report parameter
        - "value" -- then value of report parameter
-       - "id" -- then report id of the Trac
+    It supports dynamic variables.
     """)
     
     
@@ -48,10 +51,15 @@ class WikiReport(WikiMacroBase):
             if m:
                 kw = arg[:m.end() - 1].strip()
                 value = arg[m.end():]
-                req.args[kw] = value
+                if re.match(r'^\$[A-Z]*$', value):
+                   value = req.args.get(value[1:])
+                kwargs[kw] = value if value!= None else ''
             else:
+                if re.match(r'^\$[A-Z]*$', arg):
+                   arg = req.args.get(arg[1:])
                 id = int(arg)
         
+        req.args = kwargs
         req.args['page'] = '1'
         template, data, content_type = report._render_view(req, id)
         add_stylesheet(req, 'common/css/report.css')
