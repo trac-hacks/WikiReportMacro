@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
     name = 'WikiReport',
-    version = '0.2.0',
+    version = '0.2.1',
     keywords = 'trac macros report',
     author = 'Andrey Rodionov',
     author_email = 'roand@inbox.ru',
