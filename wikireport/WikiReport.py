@@ -11,6 +11,7 @@ license = "GPL"
 from trac.util.translation import _, cleandoc_
 from genshi.builder import tag
 from trac.wiki.macros import WikiMacroBase
+from trac.web.api import _RequestArgs
 from trac.web.chrome import (INavigationContributor, Chrome,
                              add_ctxtnav, add_link, add_script,
                              add_script_data, add_stylesheet, add_warning,
@@ -44,7 +45,7 @@ class WikiReport(WikiMacroBase):
         report = ReportModule(self.env)
         
         comma_splitter = re.compile(r'(?<!\\),')
-        kwargs = {}
+        kwargs = _RequestArgs()
         for arg in comma_splitter.split(args):
             arg = arg.replace(r'\,', ',')
             m = re.match(r'\s*[^=]+=', arg)
@@ -71,4 +72,4 @@ class WikiReport(WikiMacroBase):
             filepath = os.path.dirname(os.path.abspath( __file__ ))
             fullpath = os.path.join(filepath, 'WikiReport.html')
     
-        return chrome.render_template(req, fullpath, data, None, fragment=True)
+        return chrome.render_template(req, fullpath, data, None, fragment=True)
